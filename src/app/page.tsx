@@ -21,6 +21,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { instagramApi, type InstagramProfile, type ApiError } from "@/lib/instagram-api";
 import { signOut } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { getProxiedAvatarUrl, getProxiedPostImageUrl } from "@/lib/image-proxy";
 
 // Using InstagramProfile interface from the API service
 
@@ -399,7 +400,7 @@ export default function Home() {
               {/* Profile Header */}
               <div className="flex items-start space-x-4 mb-6">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={profileData.profile_picture_url} alt={profileData.full_name} />
+                  <AvatarImage src={getProxiedAvatarUrl(profileData.profile_picture_url)} alt={profileData.full_name} />
                   <AvatarFallback>{profileData.full_name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
@@ -463,7 +464,7 @@ export default function Home() {
                     {profileData.recent_posts.map((post) => (
                       <div key={post.id} className="aspect-square relative group cursor-pointer overflow-hidden rounded-lg">
                         <img
-                          src={post.image_url}
+                          src={getProxiedPostImageUrl(post.image_url)}
                           alt="Instagram post"
                           className="w-full h-full object-cover transition-transform group-hover:scale-105"
                         />
