@@ -18,17 +18,19 @@ export function getProxiedImageUrl(
   originalUrl: string, 
   options: ImageProxyOptions = {}
 ): string {
-  if (!originalUrl || originalUrl.startsWith('data:')) {
+  if (!originalUrl || originalUrl.startsWith('data:') || originalUrl.startsWith('blob:')) {
     return originalUrl;
+  }
+
+  // 添加调试日志
+  if (typeof window !== 'undefined') {
+    console.log('Original URL:', originalUrl);
   }
 
   // 清理URL，移除可能的查询参数
   const cleanUrl = originalUrl.split('?')[0];
   
-  // 编码URL
-  const encodedUrl = encodeURIComponent(cleanUrl);
-  
-  // 构建代理参数
+  // 构建代理参数 - 使用最简单的方式
   const params = new URLSearchParams();
   params.set('url', cleanUrl);
   
@@ -37,20 +39,29 @@ export function getProxiedImageUrl(
   if (options.quality) params.set('q', options.quality.toString());
   if (options.format && options.format !== 'auto') params.set('output', options.format);
   
-  // 代理服务列表（按优先级排序）
+  // 尝试多个代理服务
   const proxyServices = [
-    // images.weserv.nl - 免费稳定的图片代理服务
+    // 简单的CORS代理
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`,
+    
+    // 另一个CORS代理
+    `https://cors-anywhere.herokuapp.com/${cleanUrl}`,
+    
+    // images.weserv.nl（可能被某些地区屏蔽）
     `https://images.weserv.nl/?${params.toString()}`,
     
-    // 备用代理服务
-    `https://api.allorigins.win/raw?url=${encodedUrl}`,
-    
-    // 如果都不可用，返回原始URL（可能不会显示，但不会破坏页面）
+    // 直接使用原始URL作为最后的备选
     originalUrl
   ];
   
-  // 返回主要代理服务
-  return proxyServices[0];
+  const proxiedUrl = proxyServices[0]; // 使用第一个代理服务
+  
+  // 添加调试日志
+  if (typeof window !== 'undefined') {
+    console.log('Proxied URL:', proxiedUrl);
+  }
+  
+  return proxiedUrl;
 }
 
 /**
@@ -104,4 +115,36 @@ export function smartImageProxy(url: string, options: ImageProxyOptions = {}): s
   }
   
   return getProxiedImageUrl(url, options);
+}
+
+/**
+ * 创建带有故障转移的图片元素
+ */
+export function createFallbackImageSrc(originalUrl: string, options: ImageProxyOptions = {}): string[] {
+  if (!originalUrl || !needsProxy(originalUrl)) {
+    return [originalUrl];
+  }
+
+  const cleanUrl = originalUrl.split('?')[0];
+  const encodedUrl = encodeURIComponent(cleanUrl);
+  
+  const params = new URLSearchParams();
+  params.set('url', cleanUrl);
+  if (options.width) params.set('w', options.width.toString());
+  if (options.height) params.set('h', options.height.toString());
+  if (options.quality) params.set('q', options.quality.toString());
+
+  return [
+    // 第一选择：allorigins
+    `https://api.allorigins.win/raw?url=${encodedUrl}`,
+    
+    // 第二选择：images.weserv.nl
+    `https://images.weserv.nl/?${params.toString()}`,
+    
+    // 第三选择：尝试直接访问（可能失败）
+    originalUrl,
+    
+    // 第四选择：通过cors-anywhere（需要用户主动启用）
+    `https://cors-anywhere.herokuapp.com/${cleanUrl}`
+  ];
 }

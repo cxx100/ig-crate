@@ -21,7 +21,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { instagramApi, type InstagramProfile, type ApiError } from "@/lib/instagram-api";
 import { signOut } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { getProxiedAvatarUrl, getProxiedPostImageUrl } from "@/lib/image-proxy";
+import { ProxiedImage } from "@/components/ProxiedImage";
 
 // Using InstagramProfile interface from the API service
 
@@ -399,10 +399,19 @@ export default function Home() {
             <CardContent className="pt-6">
               {/* Profile Header */}
               <div className="flex items-start space-x-4 mb-6">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={getProxiedAvatarUrl(profileData.profile_picture_url)} alt={profileData.full_name} />
-                  <AvatarFallback>{profileData.full_name.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <div className="h-20 w-20 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                  <ProxiedImage
+                    src={profileData.profile_picture_url}
+                    alt={profileData.full_name}
+                    className="w-full h-full object-cover"
+                    options={{ width: 300, height: 300, quality: 85 }}
+                    fallbackContent={
+                      <div className="w-full h-full bg-gradient-to-r from-pink-500 to-purple-600 text-white text-2xl font-bold flex items-center justify-center">
+                        {profileData.full_name.charAt(0)}
+                      </div>
+                    }
+                  />
+                </div>
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
                     <h2 className="text-2xl font-bold">{profileData.username}</h2>
@@ -462,11 +471,17 @@ export default function Home() {
                   </h4>
                   <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                     {profileData.recent_posts.map((post) => (
-                      <div key={post.id} className="aspect-square relative group cursor-pointer overflow-hidden rounded-lg">
-                        <img
-                          src={getProxiedPostImageUrl(post.image_url)}
+                      <div key={post.id} className="aspect-square relative group cursor-pointer overflow-hidden rounded-lg bg-gray-100">
+                        <ProxiedImage
+                          src={post.image_url}
                           alt="Instagram post"
                           className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                          options={{ width: 400, height: 400, quality: 80 }}
+                          fallbackContent={
+                            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
+                              <Grid3X3 className="h-8 w-8" />
+                            </div>
+                          }
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                       </div>
