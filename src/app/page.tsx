@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Users, UserCheck, Grid3X3, Instagram, Shield, Eye, Home as HomeIcon, Info, Github, Globe, LogIn, UserPlus, LogOut, User } from "lucide-react";
+import { Search, Users, UserCheck, Grid3X3, Instagram, Shield, Eye, Home as HomeIcon, Star, BookOpen, Globe, LogIn, UserPlus, LogOut, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -138,12 +138,12 @@ export default function Home() {
                 {t.nav.home}
               </Button>
               <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                <Info className="h-4 w-4 mr-2" />
-                {t.nav.about}
+                <Star className="h-4 w-4 mr-2" />
+                {t.nav.feature}
               </Button>
               <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                <Github className="h-4 w-4 mr-2" />
-                {t.nav.github}
+                <BookOpen className="h-4 w-4 mr-2" />
+                {t.nav.blog}
               </Button>
             </nav>
 

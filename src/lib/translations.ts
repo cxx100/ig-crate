@@ -4,8 +4,8 @@ export interface Translations {
   // Navigation
   nav: {
     home: string;
-    about: string;
-    github: string;
+    feature: string;
+    blog: string;
     language: string;
     login: string;
     register: string;
@@ -134,8 +134,8 @@ export const translations: Record<Language, Translations> = {
   en: {
     nav: {
       home: 'Home',
-      about: 'About',
-      github: 'GitHub',
+      feature: 'Features',
+      blog: 'Blog',
       language: 'Language',
       login: 'Login',
       register: 'Register',
@@ -248,8 +248,8 @@ export const translations: Record<Language, Translations> = {
   zh: {
     nav: {
       home: '首页',
-      about: '关于',
-      github: 'GitHub',
+      feature: '功能',
+      blog: '博客',
       language: '语言',
       login: '登录',
       register: '注册',
